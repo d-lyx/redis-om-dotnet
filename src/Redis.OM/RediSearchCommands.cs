@@ -144,6 +144,44 @@ namespace Redis.OM
         }
 
         /// <summary>
+        /// Creates a new index or updates an existing one.
+        /// </summary>
+        /// <param name="connection">the connection.</param>
+        /// <param name="type">the type to add or update the index for.</param>
+        /// <returns>whether the index as been created or updated or not</returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static bool AddOrUpdateIndex(this IRedisConnection connection, Type type)
+        {
+            bool created = connection.CreateIndex(type);
+            if (created)
+            {
+                return created;
+            }
+            var index = type.SerializeIndex();
+            connection.Execute("FT.ALTER", index);
+            return true;
+        }
+
+        /// <summary>
+        /// Creates a new index or updates an existing one.
+        /// </summary>
+        /// <param name="connection">the connection.</param>
+        /// <param name="type">the type to add or update the index for.</param>
+        /// <returns>whether the index as been created or updated or not</returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static async Task<bool> AddOrUpdateIndexAsync(this IRedisConnection connection, Type type)
+        {
+            bool created = await connection.CreateIndexAsync(type);
+            if (created)
+            {
+                return created;
+            }
+            var index = type.SerializeIndex();
+            await connection.ExecuteAsync("FT.ALTER", index);
+            return true;
+        }
+
+        /// <summary>
         /// Deletes an index.
         /// </summary>
         /// <param name="connection">the connection.</param>
